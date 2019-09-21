@@ -37,7 +37,7 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		// passing in the location.
 		for (int i = 0; i < arr.length; i++) {
 			for (int j = 0; j < arr[0].length; j++) {
-				arr[i][j] = new Cell(i * w, j * h, cellSize);
+				arr[i][j] = new Cell(i * cellSize, j * cellSize, cellSize);
 			}
 		}
 	}
@@ -85,7 +85,7 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		// 6. Iterate through the cells and draw them all
 		for (int i = 0; i < arr.length; i++) {
 			for (int j = 0; j < arr[0].length; j++) {
-				g.drawRect(arr[i][j].getX(), arr[i][j].getY(), cellSize, cellSize);
+				g.drawRect(i * cellSize, j * cellSize, cellSize, cellSize);
 			}
 		}
 
@@ -105,7 +105,7 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 			}
 		}
 		// 8. check if each cell should live or die
-		for(int i = 0; i < arr.length; i++) {
+		for (int i = 0; i < arr.length; i++) {
 			for (int j = 0; j < arr[0].length; j++) {
 				arr[i][j].liveOrDie(livingNeighbors[i][j]);
 			}
@@ -119,32 +119,17 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 	// cell identified by x and y
 	public int getLivingNeighbors(int x, int y) {
 		int neighborsAlive = 0;
-		if (arr[x + 1][y].isAlive) {
-			neighborsAlive++;
-		}
-		if (arr[x - 1][y].isAlive) {
-			neighborsAlive++;
-		}
-		if (arr[x][y - 1].isAlive) {
-			neighborsAlive++;
-		}
-		if (arr[x][y + 1].isAlive) {
-			neighborsAlive++;
-		}
-		if (arr[x + 1][y + 1].isAlive) {
-			neighborsAlive++;
-		}
-		if (arr[x + 1][y - 1].isAlive) {
-			neighborsAlive++;
-		}
-		if (arr[x-1][y + 1].isAlive) {
-			neighborsAlive++;
-		}
-		if (arr[x-1][y - 1].isAlive) {
-			neighborsAlive++;
+		for(int i = -1; i <= 1; i++) {
+			for (int j = -1; j <= 1; j++) {
+				if(((x+i)>=0 && (y+j)>=0)&&((x+i) < arr.length && (y+j) < arr.length)) {
+					if(arr[x+i][y+i].isAlive) {
+						neighborsAlive++;
+					}
+				}
+			}
 		}
 
-		return neighborsAlive;
+		return neighborsAlive-1;
 	}
 
 	@Override
