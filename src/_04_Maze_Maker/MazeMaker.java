@@ -70,7 +70,9 @@ public class MazeMaker{
 	//   This method will check if c1 and c2 are adjacent.
 	//   If they are, the walls between them are removed.
 	private static void removeWalls(Cell c1, Cell c2) {
-		
+		if() {
+			
+		}
 	}
 	
 	//8. Complete the getUnvisitedNeighbors method

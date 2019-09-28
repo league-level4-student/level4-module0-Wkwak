@@ -27,11 +27,12 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		addMouseListener(this);
 		timer = new Timer(500, this);
 		this.cellsPerRow = cpr;
+		System.out.println(cpr);
 
 		// 2. Calculate the cell size.
 		cellSize = w / cpr;
 		// 3. Initialize the cell array to the appropriate size.
-		arr = new Cell[w][h];
+		arr = new Cell[cpr][cpr];
 		// 3. Iterate through the array and initialize each cell.
 		// Don't forget to consider the cell's dimensions when
 		// passing in the location.
@@ -85,7 +86,7 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		// 6. Iterate through the cells and draw them all
 		for (int i = 0; i < arr.length; i++) {
 			for (int j = 0; j < arr[0].length; j++) {
-				g.drawRect(i * cellSize, j * cellSize, cellSize, cellSize);
+				arr[i][j].draw(g);
 			}
 		}
 
@@ -101,12 +102,14 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		int[][] livingNeighbors = new int[cellsPerRow][cellsPerRow];
 		for (int k = 0; k < livingNeighbors.length; k++) {
 			for (int s = 0; s < livingNeighbors[0].length; s++) {
-				livingNeighbors[k][s] = getLivingNeighbors(arr[k][s].getX(), arr[k][s].getY());
+				System.out.println(k + "+" + s);
+				livingNeighbors[k][s] = getLivingNeighbors(k,s);
 			}
 		}
 		// 8. check if each cell should live or die
 		for (int i = 0; i < arr.length; i++) {
 			for (int j = 0; j < arr[0].length; j++) {
+				System.out.println(arr[0].length);
 				arr[i][j].liveOrDie(livingNeighbors[i][j]);
 			}
 		}
@@ -122,14 +125,18 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		for(int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
 				if(((x+i)>=0 && (y+j)>=0)&&((x+i) < arr.length && (y+j) < arr.length)) {
-					if(arr[x+i][y+i].isAlive) {
+					if(arr[x+i][y+j].isAlive) {
 						neighborsAlive++;
 					}
 				}
 			}
 		}
-
-		return neighborsAlive-1;
+		if(!arr[x][y].isAlive) {
+			return neighborsAlive;
+		}else {
+			return neighborsAlive-1;
+		}
+		
 	}
 
 	@Override
