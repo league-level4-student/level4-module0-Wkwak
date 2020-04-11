@@ -1,21 +1,29 @@
 package _02_Pixel_Art;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+
 public class PixelArtMaker implements MouseListener, ActionListener{
 	private JFrame window;
 	private GridInputPanel gip;
-	private GridPanel gp;
+	private static GridPanel gp;
 	private JButton b;
 	ColorSelectionPanel csp;
 	
@@ -48,7 +56,31 @@ public class PixelArtMaker implements MouseListener, ActionListener{
 	}
 	
 	public static void main(String[] args) {
+		//problem - the saved art file is not uploading upon starting the program 
+		
 		new PixelArtMaker().start();
+		try {
+			BufferedReader br = new BufferedReader(new FileReader("src/_02_Pixel_Art/art.txt"));
+			
+			String line = br.readLine();
+			while(line != null){
+				for (int i = 0; i < gp.arr.length; i++) {
+					for (int j = 0; j < gp.arr[0].length; j++) {
+						Color color = new Color(Integer.parseInt(line));
+						gp.arr[i][j].color = color;
+					}
+				}
+				line = br.readLine();
+			}
+			
+			br.close();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -80,17 +112,25 @@ public class PixelArtMaker implements MouseListener, ActionListener{
 		// TODO Auto-generated method stub
 		if (e.getActionCommand().equals("Save")) {
 			try {
-				FileWriter fw = new FileWriter("src/_04_Serialization/Pixels.txt");
+				FileWriter fw = new FileWriter("src/_02_Pixel_Art/art.txt", true);
+				
+				String array = "";
+				
 				for (int i = 0; i < gp.arr.length; i++) {
-					//save the pixels to the file or something
+					for (int j = 0; j < gp.arr[0].length; j++) {
+						String color = Integer.toString(gp.arr[i][j].color.getRGB());
+						array += color;
+						array += "\n";
+					}
 				}
-				fw.write("");
-					
+				fw.write(array);
+				System.out.println(array);
+			
 				fw.close();
 			} catch (IOException e1) {
+				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
 		}
 	}
 }
