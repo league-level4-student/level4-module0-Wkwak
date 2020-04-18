@@ -8,22 +8,26 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import _04_Serialization.SaveData;
+
 
 public class PixelArtMaker implements MouseListener, ActionListener{
 	private JFrame window;
 	private GridInputPanel gip;
-	private static GridPanel gp;
+	private GridPanel gp;
 	private JButton b;
 	ColorSelectionPanel csp;
 	
@@ -56,31 +60,10 @@ public class PixelArtMaker implements MouseListener, ActionListener{
 	}
 	
 	public static void main(String[] args) {
-		//problem - the saved art file is not uploading upon starting the program 
+		PixelArtMaker pm = new PixelArtMaker();
+		pm.start();		
 		
-		new PixelArtMaker().start();
-		try {
-			BufferedReader br = new BufferedReader(new FileReader("src/_02_Pixel_Art/art.txt"));
-			
-			String line = br.readLine();
-			while(line != null){
-				for (int i = 0; i < gp.arr.length; i++) {
-					for (int j = 0; j < gp.arr[0].length; j++) {
-						Color color = new Color(Integer.parseInt(line));
-						gp.arr[i][j].color = color;
-					}
-				}
-				line = br.readLine();
-			}
-			
-			br.close();
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		GridPanel loadedData = load();
 	}
 
 	@Override
@@ -111,26 +94,30 @@ public class PixelArtMaker implements MouseListener, ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getActionCommand().equals("Save")) {
-			try {
-				FileWriter fw = new FileWriter("src/_02_Pixel_Art/art.txt", true);
-				
-				String array = "";
-				
-				for (int i = 0; i < gp.arr.length; i++) {
-					for (int j = 0; j < gp.arr[0].length; j++) {
-						String color = Integer.toString(gp.arr[i][j].color.getRGB());
-						array += color;
-						array += "\n";
-					}
-				}
-				fw.write(array);
-				System.out.println(array);
-			
-				fw.close();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			// Construct a SaveData object and save it to a file
+			save(new GridPanel(500, 500, 20, 20));
 		}
 	}
+	
+	private static void save(GridPanel gp) {
+		try (FileOutputStream fos = new FileOutputStream("src/_02_Pixel_Art/drawing.txt"); ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+			oos.writeObject(gp);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static GridPanel load() {
+		try (FileInputStream fis = new FileInputStream("src/_02_Pixel_Art/drawing.txt"); ObjectInputStream ois = new ObjectInputStream(fis)) {
+			return (GridPanel) ois.readObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	
 }
